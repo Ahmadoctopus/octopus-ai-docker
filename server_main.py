@@ -1,39 +1,26 @@
 
-from fastapi import FastAPI, Form
-from fastapi.middleware.cors import CORSMiddleware
-import json
+from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
-# Allow all origins for global access (adjust in production)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-api_data = {}
-
-@app.get("/")
-def root():
-    return {"message": "Server is running ✅"}
+class APIKeys(BaseModel):
+    api_key: str
+    api_secret: str
 
 @app.post("/set_keys")
-def set_keys(api_key: str = Form(...), api_secret: str = Form(...)):
-    api_data["api_key"] = api_key
-    api_data["api_secret"] = api_secret
-    print("✅ Received API keys.")
-    return {"status": "success", "message": "API keys received"}
+async def set_keys(keys: APIKeys):
+    print("✅ Received API keys:")
+    print("Key:", keys.api_key)
+    print("Secret:", keys.api_secret)
+    return {"message": "Keys received successfully"}
 
 @app.post("/trade")
-def start_trading():
-    if "api_key" not in api_data or "api_secret" not in api_data:
-        return {"status": "error", "message": "API keys not set"}
-    print("▶️ Starting AI trading...")
-    return {"status": "success", "message": "AI trading started"}
+async def start_trading():
+    print("🚀 Trading started")
+    return {"message": "AI Trading started"}
 
 @app.post("/stop")
-def stop_trading():
-    print("⛔ Trading stopped.")
-    return {"status": "success", "message": "Trading stopped"}
+async def stop_trading():
+    print("🛑 Trading stopped")
+    return {"message": "Trading stopped"}

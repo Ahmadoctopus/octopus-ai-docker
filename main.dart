@@ -8,7 +8,7 @@ class OctopusApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Octopus Set Keys',
+      title: 'OctopusCryptoAi',
       theme: ThemeData.dark(),
       home: SetKeysPage(),
       debugShowCheckedModeBanner: false,
@@ -26,6 +26,7 @@ class _SetKeysPageState extends State<SetKeysPage> {
   final TextEditingController _apiSecretController = TextEditingController();
   String responseMessage = "";
   bool keysSent = false;
+  bool isTrading = false;
 
   Future<void> sendKeys() async {
     final uri = Uri.parse('https://octopus-ai-docker.onrender.com/set_keys');
@@ -48,8 +49,6 @@ class _SetKeysPageState extends State<SetKeysPage> {
         keysSent = false;
       }
     });
-
-    print("Response ${response.statusCode}: ${response.body}");
   }
 
   Future<void> startTrading() async {
@@ -60,8 +59,24 @@ class _SetKeysPageState extends State<SetKeysPage> {
     setState(() {
       if (response.statusCode == 200) {
         responseMessage = "🚀 Trading started: ${response.body}";
+        isTrading = true;
       } else {
-        responseMessage = "❌ Could not start trading: ${response.statusCode} – ${response.body}";
+        responseMessage = "❌ Failed to start trading: ${response.statusCode} – ${response.body}";
+      }
+    });
+  }
+
+  Future<void> stopTrading() async {
+    final uri = Uri.parse('https://octopus-ai-docker.onrender.com/stop');
+
+    final response = await http.post(uri);
+
+    setState(() {
+      if (response.statusCode == 200) {
+        responseMessage = "🛑 Trading stopped: ${response.body}";
+        isTrading = false;
+      } else {
+        responseMessage = "❌ Failed to stop trading: ${response.statusCode} – ${response.body}";
       }
     });
   }
@@ -69,7 +84,7 @@ class _SetKeysPageState extends State<SetKeysPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Send Binance API Keys")),
+      appBar: AppBar(title: Text("OctopusCryptoAi – Binance Keys")),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -89,17 +104,31 @@ class _SetKeysPageState extends State<SetKeysPage> {
               child: Text("Send API Keys"),
             ),
             SizedBox(height: 20),
-            if (keysSent)
+            if (keysSent && !isTrading)
               ElevatedButton(
                 onPressed: startTrading,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                 child: Text("Start Trading"),
               ),
+            if (keysSent && isTrading)
+              ElevatedButton(
+                onPressed: stopTrading,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: Text("Stop Trading"),
+              ),
             SizedBox(height: 20),
-            Text(responseMessage, textAlign: TextAlign.center),
+            Text(
+              responseMessage,
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
     );
   }
 }
+@app.post("/trade")
+async def start_trading():
+    print("✅ AI Trading started!")
+    return {"message": "Trading started"}
+
