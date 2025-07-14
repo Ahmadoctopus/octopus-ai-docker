@@ -1,6 +1,3 @@
 fastapi
 uvicorn
-pandas
-numpy
-tensorflow-cpu
-binance
+python-multipart

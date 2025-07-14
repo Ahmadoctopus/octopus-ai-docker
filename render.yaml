@@ -3,4 +3,7 @@ services:
     name: octopus-ai-docker
     env: docker
     plan: free
+    repo: https://github.com/Ahmadoctopus/octopus-ai-server
+    branch: main
     dockerfilePath: Dockerfile
+    autoDeploy: true

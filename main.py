@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Form
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Octopus AI Docker Server is running ✅"}
+@app.post("/set_keys")
+async def set_keys(api_key: str = Form(...), api_secret: str = Form(...)):
+    print("Received API Keys:", api_key, api_secret)
+    return {"status": "ok"}
+
