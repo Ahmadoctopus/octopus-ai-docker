@@ -1,4 +1,7 @@
-
 fastapi
 uvicorn
-python-multipart
+pandas
+numpy
+python-dotenv
+tensorflow-cpu==2.13.0
+
